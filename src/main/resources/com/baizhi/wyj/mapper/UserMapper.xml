@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.wyj.mapper.UserMapper" >
+
+<!--查询用户最近半年的注册情况-->
+    <select id="queryUserByMonth" resultType="com.baizhi.wyj.vo.UserVo2">
+        SELECT
+        CONCAT(YEAR(create_date),'年',MONTH(create_date),'月') AS releaseMonth,
+        count(id) number
+        FROM yx_user
+        WHERE sex=#{sex}
+        GROUP BY releaseMonth
+    </select>
+    <!--根据用户的性别查询用户的分布情况-->
+    <select id="queryUserByAddress" resultType="com.baizhi.wyj.vo.UserAddress">
+        SELECT address name ,COUNT(id) value
+        FROM yx_user
+        WHERE sex=#{sex}
+        GROUP BY address
+    </select>
+</mapper>

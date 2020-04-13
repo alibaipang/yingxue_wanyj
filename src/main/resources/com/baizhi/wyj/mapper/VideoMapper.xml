@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.baizhi.wyj.mapper.VideoMapper" >
+    <resultMap type="com.baizhi.wyj.entity.Video" id="VideoMap">
+        <id property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="brief" column="brief"/>
+        <result property="path" column="path"/>
+        <result property="cover" column="cover"/>
+        <result property="publishDate" column="publish_date"/>
+        <result property="groupId" column="group_id"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="userId" column="user_id"/>
+        <association property="category" javaType="com.baizhi.wyj.entity.Category">
+            <id column="id" property="id"/>
+            <result column="cate_name" property="cateName"></result>
+        </association>
+    </resultMap>
+    <!--后台展示视频的数据信息-->
+    <select id="queryAllByLimit" resultMap="VideoMap">
+        select
+          v.id, v.title, v.brief, v.path, v.cover, v.publish_date, v.category_id, v.user_id,v.group_id,
+          c.cate_name
+        from yx_video v
+        left join yx_category c
+        on v.category_id = c.id
+        limit #{page}, #{rows}
+  </select>
+    <!--sql复用的片段-->
+    <sql id="querySql">
+        c.cate_name cateName,
+        v.id,v.title videoTitle,v.cover cover,v.path path,v.publish_date uploadTime,v.brief description,
+        u.head_img headImg
+    </sql>
+    <!--前台接口的首页展示的方法方法-->
+    <select id="queryByReleaseTime" resultType="com.baizhi.wyj.vo.VideoVo">
+        select
+        <include refid="querySql"/>
+        from yx_category c
+        right join yx_video v on c.id=v.category_id
+        left join yx_user u on v.user_id=u.id
+        order by v.publish_date desc
+    </select>
+    <!--视频的详情-->
+    <sql id="videoSql">
+        c.cate_name cateName,c.id categoryId,
+        v.id,v.title videoTitle,v.cover cover,v.path path,v.publish_date uploadTime,v.brief description,
+        u.head_img userPicImg,u.username userName,u.id userId
+    </sql>
+    <select id="queryByVideoDetail" resultType="com.baizhi.wyj.vo.VideoVo3">
+        select
+        <include refid="videoSql"/>
+        from yx_category c
+        right join yx_video v on c.id=v.category_id
+        left join yx_user u on v.user_id=u.id
+        WHERE v.id=#{videoId} AND u.id=#{userId}
+        order by v.publish_date desc
+    </select>
+    <!--根据类别的id查询视频-->
+    <sql id="VideoSql2">
+        c.cate_name cateName,c.id categoryId,
+        v.id,v.title videoTitle,v.cover cover,v.path path,v.publish_date uploadTime,v.brief description,
+        u.id userId
+    </sql>
+    <select id="queryByVideoDetail2" resultType="com.baizhi.wyj.vo.VideoVo2">
+        select
+        <include refid="VideoSql2"/>
+        from yx_category c
+        right join yx_video v on c.id=v.category_id
+        left join yx_user u on v.user_id=u.id
+        WHERE c.id=#{cateId} and c.id!=#{notCateId}
+        order by v.publish_date desc
+    </select>
+    <!--模糊查询-->
+    <select id="queryByLikeVideoName" resultType="com.baizhi.wyj.vo.VideoVo2">
+        SELECT
+        <include refid="VideoSql2"/>
+        from yx_category c
+        right join yx_video v on c.id=v.category_id
+        left join yx_user u on v.user_id=u.id
+        where v.title like concat('%',#{content,jdbcType=VARCHAR},'%')
+        order by v.publish_date desc
+    </select>
+    <!--视频的添加-->
+    <insert id="save" parameterType="com.baizhi.wyj.entity.Video">
+        insert into yx_video values
+        (#{id},#{title},#{brief},#{path},#{cover},#{publishDate},#{categoryId},#{groupId},#{userId})
+    </insert>
+</mapper>

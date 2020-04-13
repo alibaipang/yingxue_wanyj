@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.baizhi.wyj.mapper.CategoryMapper">
+
+    <sql id="categorySql">
+        c1.id,c1.cate_name cateName,c1.levels,c1.parent_id parentId,
+        c2.id,c2.cate_name,c2.levels,c2.parent_id
+    </sql>
+    <select id="queryAllCategory" resultType="com.baizhi.wyj.vo.CategoryVo">
+        SELECT
+        <include refid="categorySql"/>
+        from yx_category c1
+        inner  JOIN yx_category c2
+        ON c1.id=c2.parent_id
+    </select>
+    <select id="queryAllCategory1" resultType="com.baizhi.wyj.vo.CategoryVo">
+        SELECT id,cate_name cateName,levels,parent_id parentId
+        from yx_category where levels='1'
+    </select>
+    <select id="queryAllCategory2" resultType="com.baizhi.wyj.vo.CategoryVo">
+        SELECT id,cate_name cateName,levels,parent_id parentId
+        from yx_category where parent_id=#{pid}
+    </select>
+        <!--sql复用的片段-->
+    <sql id="querySql">
+      c.id categoryId,c.cate_name cateName,
+      v.id,v.title videoTitle,v.cover cover,v.path path,v.publish_date uploadTime,v.brief description,
+       u.id userId,u.userName
+    </sql>
+        <!--前台接口类别展示的方法-->
+    <select id="queryCateVideoList" resultType="com.baizhi.wyj.vo.VideoVo2">
+    select
+    <include refid="querySql"/>
+        from yx_category c
+        right join yx_video v on c.id=v.category_id
+        left join yx_user u on v.user_id=u.id
+        WHERE c.id=#{cateId}
+        order by v.publish_date desc
+    </select>
+</mapper>
