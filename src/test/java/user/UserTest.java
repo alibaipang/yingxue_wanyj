@@ -25,6 +25,11 @@ public class UserTest {
             System.out.println("userAddress = " + userAddress);
         }
     }
+
+    @Test
+    public void git() {
+        System.out.println("测试Git与idea的集成");
+    }
 }
 
 
