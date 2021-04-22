@@ -73,7 +73,7 @@
         <dependency>
             <groupId>org.mybatis</groupId>
             <artifactId>mybatis</artifactId>
-            <version>3.4.6</version>
+            <version>3.5.6</version>
         </dependency>
 
         <!-- 给内嵌tomcat提供jsp解析功能的jar-->
